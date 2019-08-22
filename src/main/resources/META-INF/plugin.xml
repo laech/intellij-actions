@@ -8,20 +8,21 @@
     functionality, you can also assign keyboard shortcuts to them under
     Preferences | Keymap | Plug-ins | Actions.</p>
 
+    <br/>
     Case conversion:
     <ul>
         <li>Upcase Region or to Word End</li>
         <li>Downcase Region or to Word End</li>
         <li>Capitalize Region or to Word End</li>
     </ul>
+
+    <br/>
     Rectangular selection:
     <ul>
         <li>Create Rectangle: Create a rectangular selection between the start and end position of the current multiline selection</li>
     </ul>
-    Structural editing:
-    <ul>
-        <li>Kill to Code End: Kill from caret offset to the end of the code block, statement, method etc (Java).</li>
-    </ul>
+
+    <br/>
     Misc:
     <ul>
         <li>Use &quot;CamelHumps&quot; Words in Current Editor</li>
@@ -41,7 +42,7 @@
     <br/>
     0.4
     <ul>
-        <li>Split Kill to Code End into its own plugin: Actions Java</li>
+        <li>Split Kill to Code End into its own plugin: <a href="https://plugins.jetbrains.com/plugin/12912-actions-java">Actions Java</a></li>
     </ul>
 
     <br/>
