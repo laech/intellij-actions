@@ -40,6 +40,12 @@
     <change-notes><![CDATA[
 
     <br/>
+    0.4.1
+    <ul>
+        <li>Remove dependency on the Java plugin.</li>
+    </ul>
+
+    <br/>
     0.4
     <ul>
         <li>Split Kill to Code End into its own plugin: <a href="https://plugins.jetbrains.com/plugin/12912-actions-java">Actions Java</a></li>

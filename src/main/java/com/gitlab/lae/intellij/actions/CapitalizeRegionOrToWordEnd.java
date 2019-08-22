@@ -1,7 +1,5 @@
 package com.gitlab.lae.intellij.actions;
 
-import org.apache.commons.lang3.text.WordUtils;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,7 +14,8 @@ public final class CapitalizeRegionOrToWordEnd extends TextAction {
     private static final Edit capitalizeToWordEnd =
             Edit.replacingFromCaret(
                     ACTION_EDITOR_NEXT_WORD,
-                    CapitalizeRegionOrToWordEnd::capitalize);
+                    CapitalizeRegionOrToWordEnd::capitalize
+            );
 
     private static final Pattern wordPattern =
             Pattern.compile("\\w+");
@@ -29,8 +28,11 @@ public final class CapitalizeRegionOrToWordEnd extends TextAction {
                 buffer = new StringBuffer(str.length());
             }
             String lower = matcher.group().toLowerCase();
-            String replacement = WordUtils.capitalize(lower);
-            matcher.appendReplacement(buffer, replacement);
+            matcher.appendReplacement(
+                    buffer,
+                    lower.substring(0, 1).toUpperCase() +
+                            lower.substring(1)
+            );
         }
         return buffer == null
                 ? str
