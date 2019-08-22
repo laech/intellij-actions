@@ -30,10 +30,10 @@
     </ul>
     ]]></description>
 
-    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
+    <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
     <idea-version since-build="181"/>
 
-    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
+    <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
     <change-notes><![CDATA[
@@ -109,11 +109,6 @@
                 class="com.gitlab.lae.intellij.actions.RectangleCreate"
                 text="Create Rectangle"
                 description="Create a rectangular selection between the start and end position of the current multiline selection"/>
-
-        <action id="com.gitlab.lae.intellij.actions.PsiKill"
-                class="com.gitlab.lae.intellij.actions.PsiKill"
-                text="Kill to Code End"
-                description="Kill the code block after cursor, if no code block, kill to line end."/>
 
         <action class="com.gitlab.lae.intellij.actions.CamelHumpsInCurrentEditor"
                 id="com.gitlab.lae.intellij.actions.CamelHumpsInCurrentEditor"
