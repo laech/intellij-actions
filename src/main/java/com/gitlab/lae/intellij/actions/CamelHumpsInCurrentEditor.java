@@ -8,6 +8,10 @@ import static com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR;
 
 public final class CamelHumpsInCurrentEditor extends ToggleAction {
 
+    CamelHumpsInCurrentEditor() {
+        setEnabledInModalContext(true);
+    }
+
     @Override
     public boolean isSelected(AnActionEvent e) {
         Editor editor = e.getData(EDITOR);
