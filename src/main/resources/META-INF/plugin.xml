@@ -136,6 +136,18 @@
                 class="com.gitlab.lae.intellij.actions.OneSpace"
                 text="One Space"
                 description="Replace spaces and tabs around cursor with one space."/>
+
+        <action id="com.gitlab.lae.intellij.actions.Escape"
+                class="com.gitlab.lae.intellij.actions.Escape"
+                text="Escape"/>
+
+        <action id="com.gitlab.lae.intellij.actions.Down"
+                class="com.gitlab.lae.intellij.actions.Down"
+                text="Down"/>
+
+        <action id="com.gitlab.lae.intellij.actions.Up"
+                class="com.gitlab.lae.intellij.actions.Up"
+                text="Up"/>
     </actions>
 
 </idea-plugin>
