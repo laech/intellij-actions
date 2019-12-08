@@ -6,20 +6,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
+import static com.intellij.openapi.actionSystem.PlatformDataKeys.CONTEXT_COMPONENT;
+import static java.awt.event.KeyEvent.CHAR_UNDEFINED;
+import static java.awt.event.KeyEvent.KEY_PRESSED;
+import static java.lang.System.currentTimeMillis;
+
 abstract class KeyAction extends AnAction {
-
-    private static Robot robot = null;
-
-    private static Robot initRobot() {
-        if (robot == null) {
-            try {
-                robot = new Robot();
-            } catch (AWTException e) {
-                e.printStackTrace();
-            }
-        }
-        return robot;
-    }
 
     private final int keyCode;
 
@@ -30,10 +22,20 @@ abstract class KeyAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent event) {
-        Robot robot = initRobot();
-        if (robot != null) {
-            robot.keyPress(keyCode);
-            robot.keyRelease(keyCode);
+        Component component = event.getData(CONTEXT_COMPONENT);
+        if (component != null) {
+            component.dispatchEvent(newKeyEvent(component));
         }
+    }
+
+    private KeyEvent newKeyEvent(Component component) {
+        return new KeyEvent(
+                component,
+                KEY_PRESSED,
+                currentTimeMillis(),
+                0,
+                keyCode,
+                CHAR_UNDEFINED
+        );
     }
 }
