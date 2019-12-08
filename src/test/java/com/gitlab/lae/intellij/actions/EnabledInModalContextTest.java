@@ -1,5 +1,9 @@
 package com.gitlab.lae.intellij.actions;
 
+import com.gitlab.lae.intellij.actions.simulation.Down;
+import com.gitlab.lae.intellij.actions.simulation.Enter;
+import com.gitlab.lae.intellij.actions.simulation.Escape;
+import com.gitlab.lae.intellij.actions.simulation.Up;
 import com.intellij.openapi.actionSystem.AnAction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,15 +19,16 @@ public final class EnabledInModalContextTest {
     @Parameters(name = "{0}")
     public static Object[][] parameters() {
         return new Object[][]{
+                {new Down()},
+                {new Enter()},
+                {new Escape()},
+                {new Up()},
                 {new CamelHumpsInCurrentEditor()},
                 {new CapitalizeRegionOrToWordEnd()},
-                {new Down()},
                 {new DowncaseRegionOrToWordEnd()},
-                {new Escape()},
                 {new NoSpace()},
                 {new OneSpace()},
                 {new RectangleCreate()},
-                {new Up()},
                 {new UpcaseRegionOrToWordEnd()},
         };
     }

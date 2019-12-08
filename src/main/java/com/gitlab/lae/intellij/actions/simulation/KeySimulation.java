@@ -1,4 +1,4 @@
-package com.gitlab.lae.intellij.actions;
+package com.gitlab.lae.intellij.actions.simulation;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -11,11 +11,11 @@ import static java.awt.event.KeyEvent.CHAR_UNDEFINED;
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.lang.System.currentTimeMillis;
 
-abstract class KeyAction extends AnAction {
+abstract class KeySimulation extends AnAction {
 
     private final int keyCode;
 
-    KeyAction(int keyCode) {
+    KeySimulation(int keyCode) {
         this.keyCode = keyCode;
         setEnabledInModalContext(true);
     }
@@ -24,6 +24,7 @@ abstract class KeyAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         Component component = event.getData(CONTEXT_COMPONENT);
         if (component != null) {
+            System.out.println(getClass().getName());
             component.dispatchEvent(newKeyEvent(component));
         }
     }
