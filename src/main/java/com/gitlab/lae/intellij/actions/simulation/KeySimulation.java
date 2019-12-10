@@ -7,11 +7,12 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import static com.intellij.openapi.actionSystem.PlatformDataKeys.CONTEXT_COMPONENT;
-import static java.awt.event.KeyEvent.CHAR_UNDEFINED;
-import static java.awt.event.KeyEvent.KEY_PRESSED;
+import static java.awt.event.KeyEvent.*;
 import static java.lang.System.currentTimeMillis;
 
 abstract class KeySimulation extends AnAction {
+
+    private EventQueue eventQueue;
 
     private final int keyCode;
 
@@ -24,19 +25,19 @@ abstract class KeySimulation extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         Component component = event.getData(CONTEXT_COMPONENT);
         if (component != null) {
-            System.out.println(getClass().getName());
-            component.dispatchEvent(newKeyEvent(component));
+            if (eventQueue == null) {
+                eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+            }
+            eventQueue.postEvent(new KeyEvent(
+                    component,
+                    KEY_PRESSED,
+                    currentTimeMillis(),
+                    0,
+                    keyCode,
+                    CHAR_UNDEFINED,
+                    KEY_LOCATION_STANDARD
+            ));
         }
     }
 
-    private KeyEvent newKeyEvent(Component component) {
-        return new KeyEvent(
-                component,
-                KEY_PRESSED,
-                currentTimeMillis(),
-                0,
-                keyCode,
-                CHAR_UNDEFINED
-        );
-    }
 }
