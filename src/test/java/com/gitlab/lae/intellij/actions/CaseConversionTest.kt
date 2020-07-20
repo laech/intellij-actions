@@ -1,115 +1,108 @@
-package com.gitlab.lae.intellij.actions;
+package com.gitlab.lae.intellij.actions
 
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
 
-import static com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT;
+private const val UPCASE =
+  "com.gitlab.lae.intellij.actions.UpcaseRegionOrToWordEnd"
 
-public final class CaseConversionTest
-        extends LightPlatformCodeInsightFixtureTestCase {
+private const val DOWNCASE =
+  "com.gitlab.lae.intellij.actions.DowncaseRegionOrToWordEnd"
 
-    private static final String upcaseRegionOrToWordEnd = "com.gitlab.lae.intellij.actions.UpcaseRegionOrToWordEnd";
-    private static final String downcaseRegionOrToWordEnd = "com.gitlab.lae.intellij.actions.DowncaseRegionOrToWordEnd";
-    private static final String capitalizeRegionOrToWordEnd = "com.gitlab.lae.intellij.actions.CapitalizeRegionOrToWordEnd";
+private const val CAPITALIZE =
+  "com.gitlab.lae.intellij.actions.CapitalizeRegionOrToWordEnd"
 
-    public void test_upcaseRegionOrToWordEnd_toWordEnd() {
-        test("HELLO WORLD", "HELLO WORLD", 0, upcaseRegionOrToWordEnd);
-        test("HELLO WORLD", "HELLO WORLD", 0, upcaseRegionOrToWordEnd, 2);
-        test("hello world", "HELLO world", 0, upcaseRegionOrToWordEnd);
-        test("hello world", "HELLO WORLD", 0, upcaseRegionOrToWordEnd, 2);
-        test("hello world", "hELLO world", 1, upcaseRegionOrToWordEnd);
-        test("hello world", "hELLO WORLD", 1, upcaseRegionOrToWordEnd, 2);
-        test("hello world", "hello worlD", 10, upcaseRegionOrToWordEnd);
-        test("hello world", "hello world", 11, upcaseRegionOrToWordEnd);
-        test("hello world", "hello world", 11, upcaseRegionOrToWordEnd, 2);
-        test("hello world", "hello WORLD", 5, upcaseRegionOrToWordEnd);
-        test("hello world", "hello WORLD", 6, upcaseRegionOrToWordEnd);
-        test("hello ;; world", "hello ;; WORLD", 5, upcaseRegionOrToWordEnd);
-        test("hello ;; world", "hello ;; WORLD", 6, upcaseRegionOrToWordEnd);
-        test("hello\nworld", "HELLO\nworld", 0, upcaseRegionOrToWordEnd);
-        test("hello\nworld", "HELLO\nWORLD", 0, upcaseRegionOrToWordEnd, 2);
-        test("hello-world", "HELLO-world", 0, upcaseRegionOrToWordEnd);
-        test("hello-world", "HELLO-WORLD", 0, upcaseRegionOrToWordEnd, 2);
-    }
+class CaseConversionTest : LightPlatformCodeInsightFixtureTestCase() {
 
-    public void test_upcaseRegionOrToWordEnd_region() {
-        test("HELLO WORLD", "HELLO WORLD", 0, 11, upcaseRegionOrToWordEnd, 1);
-        test("HELLO WORLD", "HELLO WORLD", 0, 11, upcaseRegionOrToWordEnd, 2);
-        test("hello world", "HELLO world", 0, 5, upcaseRegionOrToWordEnd, 1);
-        test("hello world", "hELLO world", 1, 5, upcaseRegionOrToWordEnd, 1);
-        test("hello world", "hELLO WORLD", 1, 11, upcaseRegionOrToWordEnd, 1);
-        test("hello world", "hello worlD", 10, 11, upcaseRegionOrToWordEnd, 1);
-        test("hello world", "hello WORLD", 5, 11, upcaseRegionOrToWordEnd, 1);
-        test("hello world", "hello WORLD", 6, 11, upcaseRegionOrToWordEnd, 1);
-        test("hello ;; \nworld", "hello ;; \nWORLD", 5, 15, upcaseRegionOrToWordEnd, 1);
-        test("hello ;; world", "hello ;; WORLD", 6, 14, upcaseRegionOrToWordEnd, 1);
-    }
+  fun `test upcase to word end`() {
+    test("HELLO WORLD", "HELLO WORLD", 0, UPCASE)
+    test("HELLO WORLD", "HELLO WORLD", 0, UPCASE, 2)
+    test("hello world", "HELLO world", 0, UPCASE)
+    test("hello world", "HELLO WORLD", 0, UPCASE, 2)
+    test("hello world", "hELLO world", 1, UPCASE)
+    test("hello world", "hELLO WORLD", 1, UPCASE, 2)
+    test("hello world", "hello worlD", 10, UPCASE)
+    test("hello world", "hello world", 11, UPCASE)
+    test("hello world", "hello world", 11, UPCASE, 2)
+    test("hello world", "hello WORLD", 5, UPCASE)
+    test("hello world", "hello WORLD", 6, UPCASE)
+    test("hello ;; world", "hello ;; WORLD", 5, UPCASE)
+    test("hello ;; world", "hello ;; WORLD", 6, UPCASE)
+    test("hello\nworld", "HELLO\nworld", 0, UPCASE)
+    test("hello\nworld", "HELLO\nWORLD", 0, UPCASE, 2)
+    test("hello-world", "HELLO-world", 0, UPCASE)
+    test("hello-world", "HELLO-WORLD", 0, UPCASE, 2)
+  }
 
-    public void test_downcaseRegionOrToWordEnd_toWordEnd() {
-        test("HELLO WORLD", "hello WORLD", 0, downcaseRegionOrToWordEnd);
-        test("HELLO WORLD", "HEllo WORLD", 2, downcaseRegionOrToWordEnd);
-        test("HELLO WORLD", "hello world", 0, downcaseRegionOrToWordEnd, 2);
-    }
+  fun `test upcase region`() {
+    test("HELLO WORLD", "HELLO WORLD", 0, 11, UPCASE, 1)
+    test("HELLO WORLD", "HELLO WORLD", 0, 11, UPCASE, 2)
+    test("hello world", "HELLO world", 0, 5, UPCASE, 1)
+    test("hello world", "hELLO world", 1, 5, UPCASE, 1)
+    test("hello world", "hELLO WORLD", 1, 11, UPCASE, 1)
+    test("hello world", "hello worlD", 10, 11, UPCASE, 1)
+    test("hello world", "hello WORLD", 5, 11, UPCASE, 1)
+    test("hello world", "hello WORLD", 6, 11, UPCASE, 1)
+    test("hello ;; \nworld", "hello ;; \nWORLD", 5, 15, UPCASE, 1)
+    test("hello ;; world", "hello ;; WORLD", 6, 14, UPCASE, 1)
+  }
 
-    public void test_downcaseRegionOrToWordEnd_region() {
-        test("HELLO WORLD", "hello wORLD", 0, 7, downcaseRegionOrToWordEnd, 1);
-    }
+  fun `test downcase to word end`() {
+    test("HELLO WORLD", "hello WORLD", 0, DOWNCASE)
+    test("HELLO WORLD", "HEllo WORLD", 2, DOWNCASE)
+    test("HELLO WORLD", "hello world", 0, DOWNCASE, 2)
+  }
 
-    public void test_capitalizeRegionOrToWordEnd_toWordEnd() {
-        test("Hello", "Hello", 0, capitalizeRegionOrToWordEnd);
-        test("HELLO WORLD", "Hello WORLD", 0, capitalizeRegionOrToWordEnd);
-        test("HELLO WORLD", "Hello World", 0, capitalizeRegionOrToWordEnd, 2);
-        test("hello-world", "hEllo-world", 1, capitalizeRegionOrToWordEnd);
-        test("hello-world", "Hello-World", 0, capitalizeRegionOrToWordEnd, 2);
-    }
+  fun `test downcase region`() {
+    test("HELLO WORLD", "hello wORLD", 0, 7, DOWNCASE, 1)
+  }
 
-    public void test_capitalizeRegionOrToWordEnd_region() {
-        test("HELLO WORLD", "Hello WORLD", 0, 5, capitalizeRegionOrToWordEnd, 1);
-        test("HELLO WORLD", "HELlo WorLD", 2, 9, capitalizeRegionOrToWordEnd, 1);
-        test("hello-WORLD", "heLlo-WorLD", 2, 9, capitalizeRegionOrToWordEnd, 1);
-    }
+  fun `test capitalize to word end`() {
+    test("Hello", "Hello", 0, CAPITALIZE)
+    test("HELLO WORLD", "Hello WORLD", 0, CAPITALIZE)
+    test("HELLO WORLD", "Hello World", 0, CAPITALIZE, 2)
+    test("hello-world", "hEllo-world", 1, CAPITALIZE)
+    test("hello-world", "Hello-World", 0, CAPITALIZE, 2)
+  }
 
-    private void test(
-            String initialText,
-            String expectedTest,
-            int caretOffset,
-            String actionId
-    ) {
-        test(initialText, expectedTest, caretOffset, actionId, 1);
-    }
+  fun `test capitalize region`() {
+    test("HELLO WORLD", "Hello WORLD", 0, 5, CAPITALIZE, 1)
+    test("HELLO WORLD", "HELlo WorLD", 2, 9, CAPITALIZE, 1)
+    test("hello-WORLD", "heLlo-WorLD", 2, 9, CAPITALIZE, 1)
+  }
 
-    private void test(
-            String initialText,
-            String expectedText,
-            int caretOffset,
-            String actionId,
-            int times
-    ) {
-        test(
-                initialText,
-                expectedText,
-                caretOffset,
-                caretOffset,
-                actionId,
-                times
-        );
-    }
+  private fun test(
+    initialText: String,
+    expectedText: String,
+    caretOffset: Int,
+    actionId: String,
+    times: Int = 1
+  ) {
+    test(
+      initialText,
+      expectedText,
+      caretOffset,
+      caretOffset,
+      actionId,
+      times
+    )
+  }
 
-    private void test(
-            String initialText,
-            String expectedText,
-            int selectionStart,
-            int selectionEnd,
-            String actionId,
-            int times
-    ) {
-        myFixture.configureByText(PLAIN_TEXT, initialText);
-        CaretModel caretModel = myFixture.getEditor().getCaretModel();
-        caretModel.moveToOffset(selectionStart);
-        caretModel.getPrimaryCaret().setSelection(selectionStart, selectionEnd);
-        for (int i = 0; i < times; i++) {
-            myFixture.performEditorAction(actionId);
-        }
-        assertEquals(expectedText, myFixture.getEditor().getDocument().getText());
-    }
+  private fun test(
+    initialText: String,
+    expectedText: String,
+    selectionStart: Int,
+    selectionEnd: Int,
+    actionId: String,
+    times: Int
+  ) {
+    myFixture.configureByText(PLAIN_TEXT, initialText)
+
+    val caretModel = myFixture.editor.caretModel
+    caretModel.moveToOffset(selectionStart)
+    caretModel.primaryCaret.setSelection(selectionStart, selectionEnd)
+
+    repeat(times) { myFixture.performEditorAction(actionId) }
+    assertEquals(expectedText, myFixture.editor.document.text)
+  }
 }

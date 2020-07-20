@@ -1,36 +1,34 @@
-package com.gitlab.lae.intellij.actions;
+package com.gitlab.lae.intellij.actions
 
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
 
-import static com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT;
+private const val ONE_SPACE =
+  "com.gitlab.lae.intellij.actions.OneSpace"
 
-public final class OneSpaceTest
-        extends LightPlatformCodeInsightFixtureTestCase {
+class OneSpaceTest : LightPlatformCodeInsightFixtureTestCase() {
 
-    private static final String ONE_SPACE_ACTION_ID =
-            "com.gitlab.lae.intellij.actions.OneSpace";
+  fun `test replaces all spaces and tabs with one space`() {
+    test("HelloWorld", "HelloWorld", 0)
+    test("HelloWorld", "HelloWorld", 1)
+    test("HelloWorld", "HelloWorld", 10)
+    test(" HelloWorld", " HelloWorld", 0)
+    test("  HelloWorld", " HelloWorld", 0)
+    test("  HelloWorld", " HelloWorld", 1)
+    test("\tHelloWorld", " HelloWorld", 0)
+    test("\t\tHelloWorld", " HelloWorld", 0)
+    test(" \t \t  HelloWorld", " HelloWorld", 0)
+    test("Hello\t  \n  World", "Hello \n  World", 7)
+    test("Hello\t  \n  World", "Hello\t  \n World", 9)
+    test("Hello  World", "Hello World", 5)
+    test("Hello  World", "Hello World", 6)
+    test("Hello  World", "Hello World", 7)
+  }
 
-    public void testReplacesAllSpacesAndTabsWithOneSpace() {
-        testDelete("HelloWorld", "HelloWorld", 0);
-        testDelete("HelloWorld", "HelloWorld", 1);
-        testDelete("HelloWorld", "HelloWorld", 10);
-        testDelete(" HelloWorld", " HelloWorld", 0);
-        testDelete("  HelloWorld", " HelloWorld", 0);
-        testDelete("  HelloWorld", " HelloWorld", 1);
-        testDelete("\tHelloWorld", " HelloWorld", 0);
-        testDelete("\t\tHelloWorld", " HelloWorld", 0);
-        testDelete(" \t \t  HelloWorld", " HelloWorld", 0);
-        testDelete("Hello\t  \n  World", "Hello \n  World", 7);
-        testDelete("Hello\t  \n  World", "Hello\t  \n World", 9);
-        testDelete("Hello  World", "Hello World", 5);
-        testDelete("Hello  World", "Hello World", 6);
-        testDelete("Hello  World", "Hello World", 7);
-    }
-
-    private void testDelete(String input, String expected, int caretOffset) {
-        myFixture.configureByText(PLAIN_TEXT, input);
-        myFixture.getEditor().getCaretModel().moveToOffset(caretOffset);
-        myFixture.performEditorAction(ONE_SPACE_ACTION_ID);
-        assertEquals(expected, myFixture.getEditor().getDocument().getText());
-    }
+  private fun test(input: String, expected: String, caretOffset: Int) {
+    myFixture.configureByText(PLAIN_TEXT, input)
+    myFixture.editor.caretModel.moveToOffset(caretOffset)
+    myFixture.performEditorAction(ONE_SPACE)
+    assertEquals(expected, myFixture.editor.document.text)
+  }
 }

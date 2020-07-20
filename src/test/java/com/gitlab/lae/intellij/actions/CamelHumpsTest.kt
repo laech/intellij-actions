@@ -1,26 +1,24 @@
-package com.gitlab.lae.intellij.actions;
+package com.gitlab.lae.intellij.actions
 
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_NEXT_WORD
+import com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_PREVIOUS_WORD
+import com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
 
-import static com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_NEXT_WORD;
-import static com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_PREVIOUS_WORD;
-import static com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT;
+class CamelHumpsTest : LightPlatformCodeInsightFixtureTestCase() {
 
-public final class CamelHumpsTest
-        extends LightPlatformCodeInsightFixtureTestCase {
+  fun `test camel humps words`() {
+    myFixture.configureByText(PLAIN_TEXT, "HelloWorld")
 
-    public void testCamelHumpsWords() {
-        myFixture.configureByText(PLAIN_TEXT, "HelloWorld");
-        myFixture.getEditor().getCaretModel().moveToOffset(0);
+    myFixture.editor.caretModel.moveToOffset(0)
+    myFixture.performEditorAction(ACTION_EDITOR_NEXT_WORD)
+    assertEquals(10, myFixture.caretOffset)
 
-        myFixture.performEditorAction(ACTION_EDITOR_NEXT_WORD);
-        assertEquals(10, myFixture.getCaretOffset());
+    myFixture.performEditorAction(ACTION_EDITOR_PREVIOUS_WORD)
+    assertEquals(0, myFixture.caretOffset)
 
-        myFixture.performEditorAction(ACTION_EDITOR_PREVIOUS_WORD);
-        assertEquals(0, myFixture.getCaretOffset());
-
-        myFixture.performEditorAction("com.gitlab.lae.intellij.actions.CamelHumpsInCurrentEditor");
-        myFixture.performEditorAction(ACTION_EDITOR_NEXT_WORD);
-        assertEquals(5, myFixture.getCaretOffset());
-    }
+    myFixture.performEditorAction("com.gitlab.lae.intellij.actions.CamelHumpsInCurrentEditor")
+    myFixture.performEditorAction(ACTION_EDITOR_NEXT_WORD)
+    assertEquals(5, myFixture.caretOffset)
+  }
 }
