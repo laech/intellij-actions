@@ -9,101 +9,82 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
 
   fun `test single line selection remains unchanged`() {
     test(
-      text = "hello",
-      initialSelections = listOf(selection(from(0, 1), to(0, 2))),
-      expectedSelections = listOf(selection(from(0, 1, true), to(0, 2)))
+      "h[e]llo",
+      "h[e]llo"
     )
   }
 
   fun `test selects content in rectangle`() {
-    // h[e]llo
-    // w[o]rld
     test(
-      text = "hello\nworld",
-      initialSelections = listOf(
-        selection(from(0, 1), to(1, 2))
-      ),
-      expectedSelections = listOf(
-        selection(from(0, 1, true), to(0, 2)),
-        selection(from(1, 1, true), to(1, 2))
-      )
+      """
+        h[ello
+        wo]rld
+      """,
+      """
+        h[e]llo
+        w[o]rld
+      """
     )
   }
 
   fun `test selects short line in middle of rectangle`() {
-    // h[ell]o
-    // a[a]
-    // w[orl]d
     test(
-      text = "hello\naa\nworld",
-      initialSelections = listOf(
-        selection(from(0, 1), to(2, 4))
-      ),
-      expectedSelections = listOf(
-        selection(from(0, 1, true), to(0, 4)),
-        selection(from(1, 1, true), to(1, 2)),
-        selection(from(2, 1, true), to(2, 4))
-      )
+      """
+        h[ello
+        aa
+        worl]d
+      """,
+      """
+        h[ell]o
+        a[a]
+        w[orl]d
+      """
     )
   }
 
   fun `test skips line if line has no content in rectangle`() {
-    // h[ell]o
-    // a
-    // w[orl]d
     test(
-      text = "hello\na\nworld",
-      initialSelections = listOf(
-        selection(from(0, 1), to(2, 4))
-      ),
-      expectedSelections = listOf(
-        selection(from(0, 1, true), to(0, 4)),
-        selection(from(2, 1, true), to(2, 4))
-      )
+      """
+        h[ello
+        a
+        worl]d
+      """,
+      """
+        h[ell]o
+        a
+        w[orl]d
+      """
     )
   }
 
   fun `test negative selection`() {
-    // h[ell]o
-    // a
-    // w[orl]d
     test(
-      text = "hello\na\nworld",
-      initialSelections = listOf(
-        selection(from(0, 4), to(2, 1))
-      ),
-      expectedSelections = listOf(
-        CaretState(
-          LogicalPosition(0, 4), // caret position
-          LogicalPosition(0, 1), // from
-          LogicalPosition(0, 4)  // to
-        ),
-        CaretState(
-          LogicalPosition(2, 4), // caret position
-          LogicalPosition(2, 1), // from
-          LogicalPosition(2, 4)  // to
-        )
-      )
+      """
+        hell[o
+        a
+        w]orld
+      """,
+      """
+        h[ell]o
+        a
+        w[orl]d
+      """,
+      true
     )
   }
 
   fun `test works with multiple cursors`() {
     test(
       """
-      hello world
-      hi how
-      are you today
-      """.trimIndent(),
-      initialSelections = listOf(
-        selection(from(0, 1), to(1, 3)),
-        selection(from(1, 5), to(2, 9))
-      ),
-      expectedSelections = listOf(
-        selection(from(0, 1), to(0, 3)),
-        selection(from(1, 1), to(1, 3)),
-        selection(from(1, 5), to(1, 6)),
-        selection(from(2, 5), to(2, 9))
-      )
+        h[ello world
+        hi ]ho[w
+        are you t]oday
+      """,
+      """
+        h[el]lo world
+        h[i ]ho[w]
+        are y[ou t]oday
+      """
     )
   }
 
@@ -117,11 +98,18 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
     }
 
   private fun test(
-    text: String,
-    initialSelections: List<CaretState>,
-    expectedSelections: List<CaretState>
+    initialTextAndSelections: String,
+    expectedTextAndSelections: String,
+    expectedCaretPositionAtSelectionEnd: Boolean = false
   ) {
-    myFixture.configureByText(PLAIN_TEXT, text)
+    val (initialText, initialSelections) = parse(initialTextAndSelections.trimIndent())
+    val (expectedText, expectedSelections) = parse(
+      expectedTextAndSelections.trimIndent(),
+      expectedCaretPositionAtSelectionEnd
+    )
+    assertEquals(initialText, expectedText)
+
+    myFixture.configureByText(PLAIN_TEXT, initialText)
 
     val caretModel = myFixture.editor.caretModel
     caretModel.caretsAndSelections = initialSelections
@@ -133,11 +121,45 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
     )
   }
 
-  private fun selection(start: LogicalPosition, end: LogicalPosition) =
-    CaretState(start, start, end)
+  /**
+   * Parses a specially formatted string containing selections:
+   *  - "[" indicates a selection start
+   *  - "]" indicates a selection end
+   *
+   * Returns a string with the above characters removed, and the selections.
+   */
+  private fun parse(
+    textAndSelections: String,
+    caretPositionAtSelectionEnd: Boolean = false
+  ): Pair<String, List<CaretState>> =
+    textAndSelections.replace("[\\[\\]]".toRegex(), "") to
+      textAndSelections
+        .lineSequence()
+        .withIndex()
+        .flatMap { (line, str) ->
+          str
+            .asSequence()
+            .mapIndexedNotNull { column, char ->
+              when (char) {
+                '[', ']' -> (column to char)
+                else -> null
+              }
+            }
+            .mapIndexed { i, (column, char) -> Triple(line, column - i, char) }
+        }
+        .chunked(2)
+        .map { (start, end) ->
+          val (startLine, startColumn, startChar) = start
+          val (endLine, endColumn, endChar) = end
+          require(startChar == '[')
+          require(endChar == ']')
 
-  private fun from(line: Int, column: Int, leanForward: Boolean = false) =
-    LogicalPosition(line, column, leanForward)
-
-  private fun to(line: Int, column: Int) = LogicalPosition(line, column)
+          val selectionStart = LogicalPosition(startLine, startColumn)
+          val selectionEnd = LogicalPosition(endLine, endColumn)
+          val caretPosition =
+            if (caretPositionAtSelectionEnd) selectionEnd
+            else selectionStart
+          CaretState(caretPosition, selectionStart, selectionEnd)
+        }
+        .toList()
 }
