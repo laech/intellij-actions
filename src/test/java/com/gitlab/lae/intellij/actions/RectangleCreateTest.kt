@@ -102,8 +102,10 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
     expectedTextAndSelections: String,
     expectedCaretPositionAtSelectionEnd: Boolean = false
   ) {
-    val (initialText, initialSelections) = parse(initialTextAndSelections.trimIndent())
-    val (expectedText, expectedSelections) = parse(
+    val (initialText, initialSelections) = parseTextSelections(
+      initialTextAndSelections.trimIndent()
+    )
+    val (expectedText, expectedSelections) = parseTextSelections(
       expectedTextAndSelections.trimIndent(),
       expectedCaretPositionAtSelectionEnd
     )
@@ -121,45 +123,4 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
     )
   }
 
-  /**
-   * Parses a specially formatted string containing selections:
-   *  - "[" indicates a selection start
-   *  - "]" indicates a selection end
-   *
-   * Returns a string with the above characters removed, and the selections.
-   */
-  private fun parse(
-    textAndSelections: String,
-    caretPositionAtSelectionEnd: Boolean = false
-  ): Pair<String, List<CaretState>> =
-    textAndSelections.replace("[\\[\\]]".toRegex(), "") to
-      textAndSelections
-        .lineSequence()
-        .withIndex()
-        .flatMap { (line, str) ->
-          str
-            .asSequence()
-            .mapIndexedNotNull { column, char ->
-              when (char) {
-                '[', ']' -> (column to char)
-                else -> null
-              }
-            }
-            .mapIndexed { i, (column, char) -> Triple(line, column - i, char) }
-        }
-        .chunked(2)
-        .map { (start, end) ->
-          val (startLine, startColumn, startChar) = start
-          val (endLine, endColumn, endChar) = end
-          require(startChar == '[')
-          require(endChar == ']')
-
-          val selectionStart = LogicalPosition(startLine, startColumn)
-          val selectionEnd = LogicalPosition(endLine, endColumn)
-          val caretPosition =
-            if (caretPositionAtSelectionEnd) selectionEnd
-            else selectionStart
-          CaretState(caretPosition, selectionStart, selectionEnd)
-        }
-        .toList()
 }

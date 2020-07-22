@@ -9,26 +9,27 @@ private const val NO_SPACE =
 class NoSpaceTest : LightPlatformCodeInsightFixtureTestCase() {
 
   fun `test deletes all spaces and tabs`() {
-    test("HelloWorld", "HelloWorld", 0)
-    test("HelloWorld", "HelloWorld", 1)
-    test("HelloWorld", "HelloWorld", 10)
-    test(" HelloWorld", "HelloWorld", 0)
-    test("  HelloWorld", "HelloWorld", 0)
-    test("  HelloWorld", "HelloWorld", 1)
-    test("\tHelloWorld", "HelloWorld", 0)
-    test("\t\tHelloWorld", "HelloWorld", 0)
-    test(" \t \t  HelloWorld", "HelloWorld", 0)
-    test("Hello\t  \n World", "Hello\n World", 7)
-    test("Hello\t  \n World", "Hello\t  \nWorld", 9)
-    test("Hello World", "HelloWorld", 5)
-    test("Hello World", "HelloWorld", 6)
-    test("Hello  World", "HelloWorld", 6)
-    test("Hello  World", "HelloWorld", 7)
+    test("|HelloWorld", "HelloWorld")
+    test("H|elloWorld", "HelloWorld")
+    test("HelloWorld|", "HelloWorld")
+    test("| HelloWorld", "HelloWorld")
+    test("|  HelloWorld", "HelloWorld")
+    test(" | HelloWorld", "HelloWorld")
+    test("|\tHelloWorld", "HelloWorld")
+    test("|\t\tHelloWorld", "HelloWorld")
+    test("| \t \t  HelloWorld", "HelloWorld")
+    test("Hello\t | \n World", "Hello\n World")
+    test("Hello\t  \n| World", "Hello\t  \nWorld")
+    test("Hello| World", "HelloWorld")
+    test("Hello |World", "HelloWorld")
+    test("Hello | World", "HelloWorld")
+    test("Hello  |World", "HelloWorld")
   }
 
-  private fun test(input: String, expected: String, caretOffset: Int) {
-    myFixture.configureByText(PLAIN_TEXT, input)
-    myFixture.editor.caretModel.moveToOffset(caretOffset)
+  private fun test(textAndCarets: String, expected: String) {
+    val (text, carets) = parseTextSelections(textAndCarets)
+    myFixture.configureByText(PLAIN_TEXT, text)
+    myFixture.editor.caretModel.caretsAndSelections = carets
     myFixture.performEditorAction(NO_SPACE)
     assertEquals(expected, myFixture.editor.document.text)
   }

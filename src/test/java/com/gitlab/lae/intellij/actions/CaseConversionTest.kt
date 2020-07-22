@@ -15,92 +15,73 @@ private const val CAPITALIZE =
 class CaseConversionTest : LightPlatformCodeInsightFixtureTestCase() {
 
   fun `test upcase to word end`() {
-    test("HELLO WORLD", "HELLO WORLD", 0, UPCASE)
-    test("HELLO WORLD", "HELLO WORLD", 0, UPCASE, 2)
-    test("hello world", "HELLO world", 0, UPCASE)
-    test("hello world", "HELLO WORLD", 0, UPCASE, 2)
-    test("hello world", "hELLO world", 1, UPCASE)
-    test("hello world", "hELLO WORLD", 1, UPCASE, 2)
-    test("hello world", "hello worlD", 10, UPCASE)
-    test("hello world", "hello world", 11, UPCASE)
-    test("hello world", "hello world", 11, UPCASE, 2)
-    test("hello world", "hello WORLD", 5, UPCASE)
-    test("hello world", "hello WORLD", 6, UPCASE)
-    test("hello ;; world", "hello ;; WORLD", 5, UPCASE)
-    test("hello ;; world", "hello ;; WORLD", 6, UPCASE)
-    test("hello\nworld", "HELLO\nworld", 0, UPCASE)
-    test("hello\nworld", "HELLO\nWORLD", 0, UPCASE, 2)
-    test("hello-world", "HELLO-world", 0, UPCASE)
-    test("hello-world", "HELLO-WORLD", 0, UPCASE, 2)
+    test("|HELLO WORLD", "HELLO WORLD", UPCASE)
+    test("|HELLO WORLD", "HELLO WORLD", UPCASE, 2)
+    test("|hello world", "HELLO world", UPCASE)
+    test("|hello world", "HELLO WORLD", UPCASE, 2)
+    test("h|ello world", "hELLO world", UPCASE)
+    test("h|ello world", "hELLO WORLD", UPCASE, 2)
+    test("hello worl|d", "hello worlD", UPCASE)
+    test("hello world|", "hello world", UPCASE)
+    test("hello world|", "hello world", UPCASE, 2)
+    test("hello| world", "hello WORLD", UPCASE)
+    test("hello |world", "hello WORLD", UPCASE)
+    test("hello| ;; world", "hello ;; WORLD", UPCASE)
+    test("hello |;; world", "hello ;; WORLD", UPCASE)
+    test("|hello\nworld", "HELLO\nworld", UPCASE)
+    test("|hello\nworld", "HELLO\nWORLD", UPCASE, 2)
+    test("|hello-world", "HELLO-world", UPCASE)
+    test("|hello-world", "HELLO-WORLD", UPCASE, 2)
   }
 
   fun `test upcase region`() {
-    test("HELLO WORLD", "HELLO WORLD", 0, 11, UPCASE, 1)
-    test("HELLO WORLD", "HELLO WORLD", 0, 11, UPCASE, 2)
-    test("hello world", "HELLO world", 0, 5, UPCASE, 1)
-    test("hello world", "hELLO world", 1, 5, UPCASE, 1)
-    test("hello world", "hELLO WORLD", 1, 11, UPCASE, 1)
-    test("hello world", "hello worlD", 10, 11, UPCASE, 1)
-    test("hello world", "hello WORLD", 5, 11, UPCASE, 1)
-    test("hello world", "hello WORLD", 6, 11, UPCASE, 1)
-    test("hello ;; \nworld", "hello ;; \nWORLD", 5, 15, UPCASE, 1)
-    test("hello ;; world", "hello ;; WORLD", 6, 14, UPCASE, 1)
+    test("[HELLO WORLD]", "HELLO WORLD", UPCASE)
+    test("[HELLO WORLD]", "HELLO WORLD", UPCASE, 2)
+    test("[hello] world", "HELLO world", UPCASE)
+    test("h[ello] world", "hELLO world", UPCASE)
+    test("h[ello world]", "hELLO WORLD", UPCASE)
+    test("hello worl[d]", "hello worlD", UPCASE)
+    test("hello[ world]", "hello WORLD", UPCASE)
+    test("hello [world]", "hello WORLD", UPCASE)
+    test("hello[ ;; \nworld]", "hello ;; \nWORLD", UPCASE)
+    test("hello [;; world]", "hello ;; WORLD", UPCASE)
   }
 
   fun `test downcase to word end`() {
-    test("HELLO WORLD", "hello WORLD", 0, DOWNCASE)
-    test("HELLO WORLD", "HEllo WORLD", 2, DOWNCASE)
-    test("HELLO WORLD", "hello world", 0, DOWNCASE, 2)
+    test("|HELLO WORLD", "hello WORLD", DOWNCASE)
+    test("HE|LLO WORLD", "HEllo WORLD", DOWNCASE)
+    test("|HELLO WORLD", "hello world", DOWNCASE, 2)
   }
 
   fun `test downcase region`() {
-    test("HELLO WORLD", "hello wORLD", 0, 7, DOWNCASE, 1)
+    test("[HELLO W]ORLD", "hello wORLD", DOWNCASE)
   }
 
   fun `test capitalize to word end`() {
-    test("Hello", "Hello", 0, CAPITALIZE)
-    test("HELLO WORLD", "Hello WORLD", 0, CAPITALIZE)
-    test("HELLO WORLD", "Hello World", 0, CAPITALIZE, 2)
-    test("hello-world", "hEllo-world", 1, CAPITALIZE)
-    test("hello-world", "Hello-World", 0, CAPITALIZE, 2)
+    test("|Hello", "Hello", CAPITALIZE)
+    test("|HELLO WORLD", "Hello WORLD", CAPITALIZE)
+    test("|HELLO WORLD", "Hello World", CAPITALIZE, 2)
+    test("h|ello-world", "hEllo-world", CAPITALIZE)
+    test("|hello-world", "Hello-World", CAPITALIZE, 2)
   }
 
   fun `test capitalize region`() {
-    test("HELLO WORLD", "Hello WORLD", 0, 5, CAPITALIZE, 1)
-    test("HELLO WORLD", "HELlo WorLD", 2, 9, CAPITALIZE, 1)
-    test("hello-WORLD", "heLlo-WorLD", 2, 9, CAPITALIZE, 1)
+    test("[HELLO] WORLD", "Hello WORLD", CAPITALIZE)
+    test("HE[LLO WOR]LD", "HELlo WorLD", CAPITALIZE)
+    test("he[llo-WOR]LD", "heLlo-WorLD", CAPITALIZE)
   }
 
   private fun test(
-    initialText: String,
+    initialTextAndSelections: String,
     expectedText: String,
-    caretOffset: Int,
     actionId: String,
     times: Int = 1
   ) {
-    test(
-      initialText,
-      expectedText,
-      caretOffset,
-      caretOffset,
-      actionId,
-      times
+    val (initialText, initialSelections) = parseTextSelections(
+      initialTextAndSelections
     )
-  }
-
-  private fun test(
-    initialText: String,
-    expectedText: String,
-    selectionStart: Int,
-    selectionEnd: Int,
-    actionId: String,
-    times: Int
-  ) {
     myFixture.configureByText(PLAIN_TEXT, initialText)
-
-    val caretModel = myFixture.editor.caretModel
-    caretModel.moveToOffset(selectionStart)
-    caretModel.primaryCaret.setSelection(selectionStart, selectionEnd)
+    myFixture.editor.caretModel.caretsAndSelections = initialSelections
 
     repeat(times) { myFixture.performEditorAction(actionId) }
     assertEquals(expectedText, myFixture.editor.document.text)
