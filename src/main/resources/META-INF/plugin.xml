@@ -52,6 +52,16 @@
 
   <change-notes><![CDATA[
     <br/>
+    0.6
+    <ul>
+      <li>
+        <a href="https://gitlab.com/lae/intellij-actions/issues/13">
+          Add Rectangle Delete
+        </a>
+      </li>
+    </ul>
+
+    <br/>
     0.5
     <ul>
       <li>
@@ -188,6 +198,12 @@
       class="com.gitlab.lae.intellij.actions.RectangleCreate"
       text="Create Rectangle"
       description="Create a rectangular selection between the start and end position of the current multiline selection."/>
+
+    <action
+      id="com.gitlab.lae.intellij.actions.RectangleDelete"
+      class="com.gitlab.lae.intellij.actions.RectangleDelete"
+      text="Delete Rectangle"
+      description="Delete text within the rectangle between the start and end position of the current multiline selection."/>
 
     <action
       id="com.gitlab.lae.intellij.actions.CamelHumpsInCurrentEditor"

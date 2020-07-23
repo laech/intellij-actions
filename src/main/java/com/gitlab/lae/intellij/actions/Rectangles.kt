@@ -1,95 +1,71 @@
-package com.gitlab.lae.intellij.actions;
+package com.gitlab.lae.intellij.actions
 
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.editor.*;
-import com.intellij.openapi.editor.actionSystem.EditorActionHandler;
-import com.intellij.openapi.editor.actions.TextComponentEditorAction;
+import com.intellij.openapi.actionSystem.DataContext
+import com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_DELETE
+import com.intellij.openapi.editor.*
+import com.intellij.openapi.editor.actionSystem.EditorActionHandler
+import com.intellij.openapi.editor.actionSystem.EditorActionManager
+import com.intellij.openapi.editor.actions.TextComponentEditorAction
 
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toList;
-
-public final class RectangleCreate
-        extends TextComponentEditorAction {
-
-    public RectangleCreate() {
-        super(new Handler());
-    }
-
-    private static class Handler extends EditorActionHandler {
-        Handler() {
-            super(false);
-        }
-
-        @Override
-        protected void doExecute(
-                Editor editor,
-                Caret caret,
-                DataContext context
-        ) {
-            CaretModel caretModel = editor.getCaretModel();
-            if (!caretModel.supportsMultipleCarets()) {
-                return;
-            }
-
-            caretModel.setCaretsAndSelections(caretModel
-                    .getCaretsAndSelections()
-                    .stream()
-                    .flatMap(o -> toRectangle(o, editor.getDocument()))
-                    .collect(toList()));
-        }
-    }
-
-    private static Stream<CaretState> toRectangle(CaretState cs, Document doc) {
-
-        LogicalPosition selectionStart = cs.getSelectionStart();
-        LogicalPosition selectionEnd = cs.getSelectionEnd();
-        if (selectionStart == null || selectionEnd == null) {
-            return Stream.empty();
-        }
-
-        if (selectionStart.line == selectionEnd.line) {
-            return Stream.of(cs);
-        }
-
-        return IntStream
-                .rangeClosed(selectionStart.line, selectionEnd.line)
-
-                .filter(line -> hasEnoughColumns(
-                        selectionStart, selectionEnd, line, doc))
-
-                .mapToObj(line -> toSelection(
-                        selectionStart, selectionEnd, line));
-    }
-
-    private static boolean hasEnoughColumns(
-            LogicalPosition selectionStart,
-            LogicalPosition selectionEnd,
-            int line,
-            Document doc
+sealed class RectangleAction(val action: (Editor, Caret?, DataContext) -> Unit) :
+  TextComponentEditorAction(object : EditorActionHandler(false) {
+    override fun doExecute(
+      editor: Editor,
+      caret: Caret?,
+      context: DataContext
     ) {
-        int columns = doc.getLineEndOffset(line)
-                - doc.getLineStartOffset(line);
-
-        return selectionStart.column < columns
-                || selectionEnd.column < columns;
+      val caretModel = editor.caretModel
+      if (!caretModel.supportsMultipleCarets()) {
+        return
+      }
+      caretModel.caretsAndSelections =
+        caretModel.caretsAndSelections
+          .flatMap { toRectangle(it, editor.document) }
+      action(editor, caret, context)
     }
+  })
 
-    private static CaretState toSelection(
-            LogicalPosition selectionStart,
-            LogicalPosition selectionEnd,
-            int line
-    ) {
-        LogicalPosition lineSelectionStart =
-                new LogicalPosition(line, selectionStart.column);
+class RectangleCreate : RectangleAction({ _, _, _ -> })
 
-        LogicalPosition lineSelectionEnd =
-                new LogicalPosition(line, selectionEnd.column);
+class RectangleDelete : RectangleAction({ editor, caret, context ->
+  EditorActionManager
+    .getInstance()
+    .getActionHandler(ACTION_EDITOR_DELETE)
+    .execute(editor, caret, context)
+})
 
-        return new CaretState(
-                lineSelectionStart,
-                lineSelectionStart,
-                lineSelectionEnd);
-    }
+private fun toRectangle(cs: CaretState, doc: Document): List<CaretState> {
+  val selectionEnd = cs.selectionEnd ?: return emptyList()
+  val selectionStart = cs.selectionStart ?: return emptyList()
+  return if (selectionStart.line == selectionEnd.line) {
+    listOf(cs)
+  } else {
+    (selectionStart.line..selectionEnd.line)
+      .filter { hasEnoughColumns(selectionStart, selectionEnd, it, doc) }
+      .map { toSelection(selectionStart, selectionEnd, it) }
+  }
+}
+
+private fun hasEnoughColumns(
+  selectionStart: LogicalPosition,
+  selectionEnd: LogicalPosition,
+  line: Int,
+  doc: Document
+): Boolean {
+  val columns = (doc.getLineEndOffset(line) - doc.getLineStartOffset(line))
+  return (selectionStart.column < columns || selectionEnd.column < columns)
+}
+
+private fun toSelection(
+  selectionStart: LogicalPosition,
+  selectionEnd: LogicalPosition,
+  line: Int
+): CaretState {
+  val lineSelectionStart = LogicalPosition(line, selectionStart.column)
+  val lineSelectionEnd = LogicalPosition(line, selectionEnd.column)
+  return CaretState(
+    lineSelectionStart,
+    lineSelectionStart,
+    lineSelectionEnd
+  )
 }
