@@ -1,90 +1,96 @@
 package com.gitlab.lae.intellij.actions
 
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.CaretState
 import com.intellij.openapi.editor.LogicalPosition
 import com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 
-class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
+@RunWith(Parameterized::class)
+class RectangleCreateTest(
+  private val initialTextAndSelections: String,
+  private val expectedTextAndSelections: String,
+  private val expectedCaretPositionAtSelectionEnd: Boolean
+) : LightPlatformCodeInsightFixtureTestCase() {
 
-  fun `test single line selection remains unchanged`() {
-    test(
-      "h[e]llo",
-      "h[e]llo"
-    )
-  }
-
-  fun `test selects content in rectangle`() {
-    test(
-      """
-        h[ello
-        wo]rld
-      """,
-      """
-        h[e]llo
-        w[o]rld
-      """
-    )
-  }
-
-  fun `test selects short line in middle of rectangle`() {
-    test(
-      """
-        h[ello
-        aa
-        worl]d
-      """,
-      """
-        h[ell]o
-        a[a]
-        w[orl]d
-      """
-    )
-  }
-
-  fun `test skips line if line has no content in rectangle`() {
-    test(
-      """
-        h[ello
-        a
-        worl]d
-      """,
-      """
-        h[ell]o
-        a
-        w[orl]d
-      """
-    )
-  }
-
-  fun `test negative selection`() {
-    test(
-      """
-        hell[o
-        a
-        w]orld
-      """,
-      """
-        h[ell]o
-        a
-        w[orl]d
-      """,
-      true
-    )
-  }
-
-  fun `test works with multiple cursors`() {
-    test(
-      """
-        h[ello world
-        hi ]ho[w
-        are you t]oday
-      """,
-      """
-        h[el]lo world
-        h[i ]ho[w]
-        are y[ou t]oday
-      """
+  companion object {
+    @JvmStatic
+    @Parameters(name = "{index}: {0} -> {1}")
+    fun params() = arrayOf(
+      arrayOf(
+        "h[e]llo",
+        "h[e]llo",
+        false
+      ),
+      arrayOf(
+        """
+          h[ello
+          wo]rld
+        """,
+        """
+          h[e]llo
+          w[o]rld
+        """,
+        false
+      ),
+      arrayOf(
+        """
+          h[ello
+          aa
+          worl]d
+        """,
+        """
+          h[ell]o
+          a[a]
+          w[orl]d
+        """,
+        false
+      ),
+      arrayOf(
+        """
+          h[ello
+          a
+          worl]d
+        """,
+        """
+          h[ell]o
+          a
+          w[orl]d
+        """,
+        false
+      ),
+      arrayOf(
+        """
+          hell[o
+          a
+          w]orld
+        """,
+        """
+          h[ell]o
+          a
+          w[orl]d
+        """,
+        true
+      ),
+      arrayOf(
+        """
+          h[ello world
+          hi ]ho[w
+          are you t]oday
+        """,
+        """
+          h[el]lo world
+          h[i ]ho[w]
+          are y[ou t]oday
+        """,
+        false
+      )
     )
   }
 
@@ -97,11 +103,18 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
       )
     }
 
-  private fun test(
-    initialTextAndSelections: String,
-    expectedTextAndSelections: String,
-    expectedCaretPositionAtSelectionEnd: Boolean = false
-  ) {
+  @Before
+  public override fun setUp() {
+    super.setUp()
+  }
+
+  @After
+  public override fun tearDown() {
+    super.tearDown()
+  }
+
+  @Test
+  fun test() {
     val (initialText, initialSelections) = parseTextSelections(
       initialTextAndSelections.trimIndent()
     )
@@ -111,16 +124,17 @@ class RectangleCreateTest : LightPlatformCodeInsightFixtureTestCase() {
     )
     assertEquals(initialText, expectedText)
 
-    myFixture.configureByText(PLAIN_TEXT, initialText)
+    ApplicationManager.getApplication().invokeAndWait {
+      myFixture.configureByText(PLAIN_TEXT, initialText)
 
-    val caretModel = myFixture.editor.caretModel
-    caretModel.caretsAndSelections = initialSelections
+      val caretModel = myFixture.editor.caretModel
+      caretModel.caretsAndSelections = initialSelections
 
-    myFixture.performEditorAction("com.gitlab.lae.intellij.actions.CreateRectangularSelectionFromMultiLineSelection")
-    assertEquals(
-      positions(expectedSelections),
-      positions(caretModel.caretsAndSelections)
-    )
+      myFixture.performEditorAction("com.gitlab.lae.intellij.actions.CreateRectangularSelectionFromMultiLineSelection")
+      assertEquals(
+        positions(expectedSelections),
+        positions(caretModel.caretsAndSelections)
+      )
+    }
   }
-
 }
