@@ -1,43 +1,44 @@
-package com.gitlab.lae.intellij.actions.simulation;
+package com.gitlab.lae.intellij.actions
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.PlatformDataKeys.CONTEXT_COMPONENT
+import java.awt.EventQueue
+import java.awt.Toolkit.getDefaultToolkit
+import java.awt.event.KeyEvent
+import java.awt.event.KeyEvent.*
+import java.lang.System.currentTimeMillis
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
+abstract class KeySimulations(private val keyCode: Int) : AnAction() {
 
-import static com.intellij.openapi.actionSystem.PlatformDataKeys.CONTEXT_COMPONENT;
-import static java.awt.event.KeyEvent.*;
-import static java.lang.System.currentTimeMillis;
+  private var eventQueue: EventQueue? = null
 
-abstract class KeySimulation extends AnAction {
+  init {
+    isEnabledInModalContext = true
+  }
 
-    private EventQueue eventQueue;
-
-    private final int keyCode;
-
-    KeySimulation(int keyCode) {
-        this.keyCode = keyCode;
-        setEnabledInModalContext(true);
+  override fun actionPerformed(event: AnActionEvent) {
+    val component = event.getData(CONTEXT_COMPONENT)
+    if (component != null) {
+      if (eventQueue == null) {
+        eventQueue = getDefaultToolkit().systemEventQueue
+      }
+      eventQueue!!.postEvent(
+        KeyEvent(
+          component,
+          KEY_PRESSED,
+          currentTimeMillis(),
+          0,
+          keyCode,
+          CHAR_UNDEFINED,
+          KEY_LOCATION_STANDARD
+        )
+      )
     }
-
-    @Override
-    public void actionPerformed(AnActionEvent event) {
-        Component component = event.getData(CONTEXT_COMPONENT);
-        if (component != null) {
-            if (eventQueue == null) {
-                eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-            }
-            eventQueue.postEvent(new KeyEvent(
-                    component,
-                    KEY_PRESSED,
-                    currentTimeMillis(),
-                    0,
-                    keyCode,
-                    CHAR_UNDEFINED,
-                    KEY_LOCATION_STANDARD
-            ));
-        }
-    }
-
+  }
 }
+
+class Up : KeySimulations(VK_UP)
+class Down : KeySimulations(VK_DOWN)
+class Enter : KeySimulations(VK_ENTER)
+class Escape : KeySimulations(VK_ESCAPE)

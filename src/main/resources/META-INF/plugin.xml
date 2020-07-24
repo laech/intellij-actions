@@ -224,25 +224,25 @@
 
     <action
       id="com.gitlab.lae.intellij.actions.Escape"
-      class="com.gitlab.lae.intellij.actions.simulation.Escape"
+      class="com.gitlab.lae.intellij.actions.Escape"
       text="Escape"
       description="Allows a custom shortcut to simulate an Escape key press."/>
 
     <action
       id="com.gitlab.lae.intellij.actions.Down"
-      class="com.gitlab.lae.intellij.actions.simulation.Down"
+      class="com.gitlab.lae.intellij.actions.Down"
       text="Down"
       description="Allows a custom shortcut to simulate a Down key press."/>
 
     <action
       id="com.gitlab.lae.intellij.actions.Up"
-      class="com.gitlab.lae.intellij.actions.simulation.Up"
+      class="com.gitlab.lae.intellij.actions.Up"
       text="Up"
       description="Allows a custom shortcut to simulate an Up key press."/>
 
     <action
       id="com.gitlab.lae.intellij.actions.Enter"
-      class="com.gitlab.lae.intellij.actions.simulation.Enter"
+      class="com.gitlab.lae.intellij.actions.Enter"
       text="Enter"
       description="Allows a custom shortcut to simulate an Enter key press."/>
   </actions>

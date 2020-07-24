@@ -1,30 +1,19 @@
-package com.gitlab.lae.intellij.actions;
+package com.gitlab.lae.intellij.actions
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.ToggleAction;
-import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR
+import com.intellij.openapi.actionSystem.ToggleAction
 
-import static com.intellij.openapi.actionSystem.CommonDataKeys.EDITOR;
+class CamelHumpsInCurrentEditor : ToggleAction() {
 
-public final class CamelHumpsInCurrentEditor extends ToggleAction {
+  init {
+    isEnabledInModalContext = true
+  }
 
-    CamelHumpsInCurrentEditor() {
-        setEnabledInModalContext(true);
-    }
+  override fun isSelected(event: AnActionEvent) =
+    event.getData(EDITOR)?.settings?.isCamelWords ?: false
 
-    @Override
-    public boolean isSelected(AnActionEvent e) {
-        Editor editor = e.getData(EDITOR);
-        return editor != null &&
-                editor.getSettings().isCamelWords();
-    }
-
-    @Override
-    public void setSelected(AnActionEvent e, boolean state) {
-        Editor editor = e.getData(EDITOR);
-        if (editor != null) {
-            editor.getSettings().setCamelWords(true);
-        }
-    }
-
+  override fun setSelected(event: AnActionEvent, state: Boolean) {
+    event.getData(EDITOR)?.settings?.isCamelWords = true
+  }
 }
