@@ -19,7 +19,8 @@
     <br/>
     <strong>Rectangular selection</strong>
     <ul>
-        <li>Create Rectangle: Create a rectangular selection between the start and end position of the current multiline selection</li>
+        <li>Create Rectangle: Create a rectangular selection between the start and end position of the current multiline selection.</li>
+        <li>Delete Rectangle: Delete text within the rectangle between the start and end position of the current multiline selection.</li>
     </ul>
 
     <br/>
