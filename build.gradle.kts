@@ -13,13 +13,15 @@ repositories {
   mavenCentral()
 }
 
-listOf("compileKotlin", "compileTestKotlin").forEach {
-  tasks.getByName<KotlinCompile>(it) {
-    kotlinOptions.jvmTarget = "1.8"
-  }
+tasks.withType<KotlinCompile> {
+  kotlinOptions.jvmTarget = "1.8"
+  kotlinOptions.jdkHome =
+    javaToolchains
+      .compilerFor { languageVersion.set(JavaLanguageVersion.of(8)) }
+      .get().metadata.installationPath.asFile.absolutePath
 }
 
-tasks.getByName<Test>("test") {
+tasks.withType<Test> {
   testLogging {
     exceptionFormat = TestExceptionFormat.FULL
   }
