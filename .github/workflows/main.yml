@@ -20,3 +20,7 @@ jobs:
       - name: Gradle Build
         run: ./gradlew build
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: intellij-actions
+          path: build/distributions/*
