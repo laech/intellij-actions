@@ -1,12 +1,12 @@
 package com.gitlab.lae.intellij.actions
 
 import com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 private const val ONE_SPACE =
   "com.gitlab.lae.intellij.actions.OneSpace"
 
-class OneSpaceTest : LightPlatformCodeInsightFixtureTestCase() {
+class OneSpaceTest : BasePlatformTestCase() {
 
   fun `test replaces all spaces and tabs with one space`() {
     test("|HelloWorld", "HelloWorld")

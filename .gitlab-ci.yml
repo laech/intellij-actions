@@ -1,12 +1,6 @@
-image: java:8-jdk
+image: java:11-jdk
 
 build:
   stage: build
   script:
-    - ./gradlew clean build
-
-build-intellij-2021.1:
-  stage: build
-  script:
-    - ./gradlew clean build -PintellijVersion=2021.1
-
+    - ./gradlew build

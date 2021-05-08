@@ -14,11 +14,10 @@ repositories {
 }
 
 tasks.withType<KotlinCompile> {
-  kotlinOptions.jvmTarget = "1.8"
-  kotlinOptions.jdkHome =
-    javaToolchains
-      .compilerFor { languageVersion.set(JavaLanguageVersion.of(8)) }
-      .get().metadata.installationPath.asFile.absolutePath
+  kotlinOptions.jvmTarget = "11"
+  kotlinOptions.jdkHome = javaToolchains
+    .compilerFor { languageVersion.set(JavaLanguageVersion.of(11)) }
+    .get().metadata.installationPath.asFile.absolutePath
 }
 
 tasks.withType<Test> {
@@ -29,8 +28,7 @@ tasks.withType<Test> {
 
 intellij {
   updateSinceUntilBuild = false
-  version =
-    project.properties.getOrDefault("intellijVersion", "2019.1").toString()
+  version = "2021.1"
 }
 
 dependencies {

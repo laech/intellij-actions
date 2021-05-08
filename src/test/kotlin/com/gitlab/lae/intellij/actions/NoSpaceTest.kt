@@ -1,12 +1,12 @@
 package com.gitlab.lae.intellij.actions
 
 import com.intellij.openapi.fileTypes.FileTypes.PLAIN_TEXT
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase
+import com.intellij.testFramework.fixtures.BasePlatformTestCase
 
 private const val NO_SPACE =
   "com.gitlab.lae.intellij.actions.NoSpace"
 
-class NoSpaceTest : LightPlatformCodeInsightFixtureTestCase() {
+class NoSpaceTest : BasePlatformTestCase() {
 
   fun `test deletes all spaces and tabs`() {
     test("|HelloWorld", "HelloWorld")
