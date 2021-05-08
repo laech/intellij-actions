@@ -2,7 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  id("org.jetbrains.kotlin.jvm").version("1.3.72")
+  id("org.jetbrains.kotlin.jvm").version("1.5.0")
   id("org.jetbrains.intellij").version("0.7.3")
 }
 
@@ -25,8 +25,12 @@ tasks.getByName<Test>("test") {
   }
 }
 
-intellij(Action {
+intellij {
   updateSinceUntilBuild = false
   version =
     project.properties.getOrDefault("intellijVersion", "2019.1").toString()
-})
+}
+
+dependencies {
+  implementation(kotlin("stdlib-jdk8"))
+}

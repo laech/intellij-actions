@@ -4,20 +4,20 @@ import com.intellij.openapi.actionSystem.IdeActions.ACTION_EDITOR_NEXT_WORD
 import java.util.regex.Pattern
 
 private val upcaseRegion =
-  replacingSelection(String::toUpperCase)
+  replacingSelection(String::uppercase)
 
 private val upcaseToWordEnd =
-  replacingFromCaret(ACTION_EDITOR_NEXT_WORD, String::toUpperCase)
+  replacingFromCaret(ACTION_EDITOR_NEXT_WORD, String::uppercase)
 
 class UpcaseRegionOrToWordEnd :
   TextAction(true, upcaseRegion.ifNoSelection(upcaseToWordEnd))
 
 
 private val downcaseRegion =
-  replacingSelection(String::toLowerCase)
+  replacingSelection(String::lowercase)
 
 private val downcaseToWordEnd =
-  replacingFromCaret(ACTION_EDITOR_NEXT_WORD, String::toLowerCase)
+  replacingFromCaret(ACTION_EDITOR_NEXT_WORD, String::lowercase)
 
 class DowncaseRegionOrToWordEnd :
   TextAction(true, downcaseRegion.ifNoSelection(downcaseToWordEnd))
@@ -35,7 +35,8 @@ private fun capitalize(str: String): String {
   val buffer = StringBuffer(str.length)
   val matcher = wordPattern.matcher(str)
   while (matcher.find()) {
-    val capitalized = matcher.group().toLowerCase().capitalize()
+    val capitalized =
+      matcher.group().lowercase().replaceFirstChar(Char::titlecase)
     matcher.appendReplacement(buffer, capitalized)
   }
   return matcher.appendTail(buffer).toString()
